@@ -21,7 +21,7 @@ export const levels: Level[] = [
     title: "Arcane & Jinx",
     theme: "cyberpunk",
     cipher: "Atbash Cipher",
-    description: "In the depths of Zaun, decode this alchemical formula.",
+    description: "In the depths of Zaun, decode this alchemical formula using HexTech power.",
     solution: "HEXTECH CRYSTAL",
     hints: [
       "This cipher reverses the alphabet: A becomes Z, B becomes Y, etc.",
@@ -32,15 +32,15 @@ export const levels: Level[] = [
   },
   {
     id: 3,
-    title: "Sci-Fi Hacking Terminal",
+    title: "Silo Security Terminal",
     theme: "terminal",
-    cipher: "Base64",
-    description: "Access granted. Decode this intercepted transmission.",
-    solution: "ACCESS GRANTED",
+    cipher: "Multi-part Puzzle",
+    description: "Uncover the truth hidden in the silo's security system. Access all nodes to reveal the complete message.",
+    solution: "If you've gotten this far, you already know. The game is rigged. We think we're the chosen ones but we're only one of many. The founders didn't build a single silo. They built fifty. And they created the safeguard. We have been lied to.",
     hints: [
-      "This looks like Base64 encoding",
-      "Base64 uses A-Z, a-z, 0-9, +, and / characters",
-      "Try decoding the Base64 string"
+      "Use 'access [1-5]' to enter each security node",
+      "Type 'help' when inside a node to get specific guidance",
+      "Each node requires a specific phrase to unlock"
     ],
     maxScore: 200
   },
@@ -159,7 +159,7 @@ export const generateChallenge = (level: Level): CipherChallenge => {
       };
     case 3:
       return {
-        encoded: base64Encode(level.solution),
+        encoded: "MULTI_PART_PUZZLE",
         solution: level.solution
       };
     case 4:

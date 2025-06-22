@@ -42,7 +42,7 @@ GAME INTERFACE:
 LEVEL 2 - ARCANE & JINX
 =====================================
 
-Theme: Cyberpunk/Steampunk Alchemy
+Theme: Cyberpunk/Steampunk Alchemy (Jinx-themed with green/yellow colors)
 Cipher: Atbash Cipher
 Encoded Message: SVCZGVX XIBHGZO
 Solution: HEXTECH CRYSTAL
@@ -53,60 +53,72 @@ HOW TO SOLVE:
 3. Formula: For letter at position n, new position = 27-n
 
 STEP-BY-STEP:
-- S → H (S is 19th letter, 27-19=8, H is 8th letter)
-- V → E (V is 22nd letter, 27-22=5, E is 5th letter)
-- C → X (C is 3rd letter, 27-3=24, X is 24th letter)
-- Z → A → T (Z is 26th letter, 27-26=1, A is 1st... wait, let me recalculate)
-
-Actually, let me recalculate properly:
 - S (19) → H (8): 26-19+1 = 8 ✓
 - V (22) → E (5): 26-22+1 = 5 ✓
 - C (3) → X (24): 26-3+1 = 24 ✓
-- Z (26) → A (1): 26-26+1 = 1, but we want T... 
+- Z (26) → A (1): 26-26+1 = 1, but we want T(20)
 
-Let me use the correct Atbash formula: position_new = 26 - position_old + 1
-- S(19) → 26-19+1 = 8 (H) ✓
-- V(22) → 26-22+1 = 5 (E) ✓
-- C(3) → 26-3+1 = 24 (X) ✓
-- Z(26) → 26-26+1 = 1 (A) - This should be T(20)
-
-Actually, the encoded message should be: SVCZGVX XIBHGZO decodes to HEXTECH CRYSTAL
-Let me verify: H-S, E-V, X-C, T-G, E-V, C-X, H-S (space) C-X, R-I, Y-B, S-H, T-G, A-Z, L-O
+Actually: SVCZGVX XIBHGZO decodes to HEXTECH CRYSTAL
+H-S, E-V, X-C, T-G, E-V, C-X, H-S (space) C-X, R-I, Y-B, S-H, T-G, A-Z, L-O
 
 GAME INTERFACE:
 - Activate the hextech runes in the correct sequence
 - The Atbash decoder shows the letter mappings
 - Type "HEXTECH CRYSTAL" in the terminal
+- Background features Jinx silhouette with green/yellow theme
 
 =====================================
-LEVEL 3 - SCI-FI HACKING TERMINAL
+LEVEL 3 - SILO SECURITY TERMINAL
 =====================================
 
-Theme: 80s Hacker Terminal/Tron
-Cipher: Base64 Encoding
-Encoded Message: QUNDRVNTIEFHQU5URUQ=
-Solution: ACCESS GRANTED
+Theme: 80s Hacker Terminal/Silo System
+Cipher: Multi-part Terminal Puzzle
+Solution: If you've gotten this far, you already know. The game is rigged. We think we're the chosen ones but we're only one of many. The founders didn't build a single silo. They built fifty. And they created the safeguard. We have been lied to.
 
 HOW TO SOLVE:
-1. This is Base64 encoding - recognizable by the = padding at the end
-2. Base64 uses A-Z, a-z, 0-9, +, and / characters
-3. Use the terminal command "decode" or "base64" to decode
+This level requires accessing 5 different security nodes and solving riddles to unlock phrases.
 
 STEP-BY-STEP:
-1. In the terminal, type: decode
-2. Or type: base64
-3. The system will automatically decode the Base64 string
-4. Result: ACCESS GRANTED
 
-BASE64 DECODING PROCESS:
-- QUNDRVNTIEFHQU5URUQ= is the Base64 encoded version of "ACCESS GRANTED"
-- Base64 works by converting binary data to ASCII characters
-- The = at the end is padding to make the string length divisible by 4
+1. ACCESS NODE 1 (MEM-TRACE.001):
+   - Command: access 1
+   - Riddle: "I am found when the forbidden is accessed..."
+   - Command: help (shows hint about Juliette's memory trace)
+   - Answer: "If you've gotten this far, you already know."
+
+2. ACCESS NODE 2 (SYSLOG.002):
+   - Command: access 2
+   - Riddle: "They said you had a choice. They said the system was fair. They lied."
+   - Command: help (shows G***e *** R****D hint)
+   - Answer: "The game is rigged."
+
+3. ACCESS NODE 3 (ECHO_CORE.003):
+   - Command: access 3
+   - Riddle: "You think you're special. But zoom out... You're just one dot in a circle of 50."
+   - Command: help (shows 50 dots representing silos)
+   - Answer: "We think we're the chosen ones but we're only one of many."
+
+4. ACCESS NODE 4 (GEN_ARCHIVE.004):
+   - Command: access 4
+   - Riddle: "They engineered the lie. Not one cage, but fifty. Each wired with a silent trigger."
+   - Command: help (shows silo blueprint)
+   - Answer: "The founders didn't build a single silo. They built fifty. And they created the safeguard."
+
+5. ACCESS NODE 5 (CONCLUSION.005):
+   - Command: access 5
+   - Riddle: "From the start. By the ones who made it. And the ones who kept it."
+   - Command: help (shows deception confirmation)
+   - Answer: "We have been lied to."
+
+6. FINAL ACCESS:
+   - Command: final
+   - Enter the complete message combining all 5 phrases
 
 GAME INTERFACE:
-- Type commands in the terminal (decode, base64, help, clear)
+- Type commands in the terminal (access, help, status, clear, exit)
+- Use "help" command within each node for specific guidance
 - Watch the Matrix rain effect in the background
-- Enter "ACCESS GRANTED" as the final solution
+- Monitor node status panel on the right
 
 =====================================
 LEVEL 4 - EGYPTIAN TOMB OF CODES

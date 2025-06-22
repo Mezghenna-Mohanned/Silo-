@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Lightbulb, CheckCircle, Cog } from 'lucide-react';
+import { Zap, Lightbulb, CheckCircle, Cog, Target } from 'lucide-react';
 import { atbashEncode } from '../../utils/ciphers';
 import { generateChallenge } from '../../utils/gameData';
 import { levels } from '../../utils/gameData';
@@ -15,6 +15,7 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
   const [userInput, setUserInput] = useState('');
   const [showSolution, setShowSolution] = useState(false);
   const [activeRunes, setActiveRunes] = useState<number[]>([]);
+  const [hexTechPower, setHexTechPower] = useState(0);
   
   const level = levels[1];
   const challenge = generateChallenge(level);
@@ -22,11 +23,13 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
   const runes = ['⚡', '🔮', '⚙️', '🧪', '💎', '🔥'];
 
   const toggleRune = (index: number) => {
-    setActiveRunes(prev => 
-      prev.includes(index) 
+    setActiveRunes(prev => {
+      const newActive = prev.includes(index) 
         ? prev.filter(i => i !== index)
-        : [...prev, index]
-    );
+        : [...prev, index];
+      setHexTechPower(newActive.length * 16.67);
+      return newActive;
+    });
   };
 
   const checkSolution = () => {
@@ -38,22 +41,33 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-teal-900 pt-20 relative overflow-hidden">
-      {/* Animated Background */}
+    <div 
+      className="min-h-screen pt-20 relative overflow-hidden"
+      style={{
+        backgroundImage: 'url(/images/jnx.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Dark overlay to make content readable */}
+      <div className="absolute inset-0 bg-black/60"></div>
+      
+      {/* Animated particles */}
       <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-neon-blue rounded-full"
+            className="absolute w-1 h-1 bg-lime-400 rounded-full"
             animate={{
-              x: [0, Math.random() * window.innerWidth],
+              x: [0, Math.random() * window.innerWidth * 0.6],
               y: [0, Math.random() * window.innerHeight],
               opacity: [0, 1, 0],
             }}
             transition={{
-              duration: Math.random() * 10 + 5,
+              duration: Math.random() * 8 + 4,
               repeat: Infinity,
-              delay: Math.random() * 5,
+              delay: Math.random() * 3,
             }}
           />
         ))}
@@ -61,14 +75,15 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
 
       <div className="container mx-auto px-4 py-8 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="max-w-2xl"
         >
-          {/* Cyberpunk Header */}
-          <div className="bg-gradient-to-r from-purple-800/80 to-blue-800/80 p-8 rounded-t-lg border border-neon-blue shadow-2xl backdrop-blur-sm">
+          {/* Header - positioned on the left */}
+          <div className="bg-black/80 backdrop-blur-sm p-6 rounded-lg border-2 border-lime-400 shadow-2xl mb-6">
             <motion.h1
-              className="text-4xl font-cyber text-neon-blue mb-4 text-center animate-glow"
+              className="text-3xl font-bold text-lime-400 mb-3 text-center"
+              style={{ textShadow: '0 0 20px #84cc16' }}
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
             >
@@ -77,127 +92,139 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
             <p className="text-lg text-gray-300 text-center">
               {level.description}
             </p>
+            <div className="text-center mt-3">
+              <span className="text-lime-300 text-sm font-mono">
+                "THERE IS A MONSTER INSIDE ALL OF US"
+              </span>
+            </div>
           </div>
 
-          {/* Main Interface */}
-          <div className="bg-gray-900/90 p-8 border border-neon-blue border-t-0 shadow-2xl backdrop-blur-sm">
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Alchemical Interface */}
-              <div className="text-center">
-                <h3 className="text-2xl font-cyber text-neon-green mb-6">Hextech Decoder</h3>
-                
-                {/* Rune Circle */}
-                <motion.div
-                  className="relative w-64 h-64 mx-auto mb-6"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                >
-                  <div className="absolute inset-0 border-2 border-neon-blue rounded-full animate-pulse">
-                    {runes.map((rune, index) => {
-                      const angle = (index * 60) * (Math.PI / 180);
-                      const x = Math.cos(angle) * 100;
-                      const y = Math.sin(angle) * 100;
-                      
-                      return (
-                        <motion.button
-                          key={index}
-                          className={`absolute w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 ${
-                            activeRunes.includes(index)
-                              ? 'bg-neon-blue text-black shadow-lg shadow-neon-blue/50'
-                              : 'bg-gray-800 text-neon-blue border border-neon-blue/50 hover:bg-neon-blue/20'
-                          }`}
-                          style={{
-                            left: `calc(50% + ${x}px - 24px)`,
-                            top: `calc(50% + ${y}px - 24px)`,
-                          }}
-                          onClick={() => toggleRune(index)}
-                          whileHover={{ scale: 1.2 }}
-                          whileTap={{ scale: 0.9 }}
-                        >
-                          {rune}
-                        </motion.button>
-                      );
-                    })}
-                  </div>
-                  
-                  <div className="absolute inset-8 border border-neon-green rounded-full flex items-center justify-center">
-                    <motion.div
-                      animate={{ rotate: -360 }}
-                      transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                    >
-                      <Cog className="w-16 h-16 text-neon-green" />
-                    </motion.div>
-                  </div>
-                </motion.div>
-
-                <div className="text-neon-blue text-sm">
-                  Active Runes: {activeRunes.length}/6
-                </div>
-              </div>
-
-              {/* Decoding Terminal */}
-              <div>
-                <h3 className="text-2xl font-cyber text-neon-green mb-4">Zaun Terminal</h3>
-                
-                <div className="bg-black p-4 rounded-lg border border-neon-green mb-4 font-mono">
-                  <div className="text-neon-green text-sm mb-2">
-                    &gt; INTERCEPTED_MESSAGE.hex
-                  </div>
-                  <div className="text-neon-blue text-lg tracking-wider animate-flicker">
-                    {challenge.encoded}
-                  </div>
-                </div>
-                
-                <div className="bg-black p-4 rounded-lg border border-neon-blue mb-4 font-mono">
-                  <div className="text-neon-blue text-sm mb-2">
-                    &gt; ATBASH_DECODER.exe
-                  </div>
-                  <div className="text-neon-green text-sm">
-                    A↔Z, B↔Y, C↔X, D↔W, E↔V...
-                  </div>
-                </div>
-                
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-neon-green mb-2">
-                    DECODED_OUTPUT:
-                  </label>
-                  <input
-                    type="text"
-                    value={userInput}
-                    onChange={(e) => setUserInput(e.target.value)}
-                    className="w-full px-4 py-2 bg-black border border-neon-blue rounded-lg focus:border-neon-green focus:outline-none text-neon-blue font-mono"
-                    placeholder="Enter decoded message..."
-                    onKeyPress={(e) => e.key === 'Enter' && checkSolution()}
+          {/* Main Interface - left side only */}
+          <div className="bg-black/85 backdrop-blur-sm p-6 border-2 border-lime-400 shadow-2xl rounded-lg">
+            {/* HexTech Power Core */}
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-lime-400 mb-4">HexTech Power Core</h3>
+              
+              {/* Power Level Display */}
+              <div className="mb-4">
+                <div className="w-full bg-gray-800 rounded-full h-4 border border-lime-400">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-lime-400 to-yellow-400 rounded-full"
+                    style={{ width: `${hexTechPower}%` }}
+                    animate={{ boxShadow: `0 0 ${hexTechPower/5}px #84cc16` }}
                   />
                 </div>
-                
-                <div className="flex space-x-4">
-                  <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(57, 255, 20, 0.5)' }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={checkSolution}
-                    className="flex-1 px-6 py-3 bg-neon-green text-black rounded-lg hover:bg-neon-green/80 transition-all font-semibold"
-                  >
-                    {showSolution ? (
-                      <span className="flex items-center justify-center space-x-2">
-                        <CheckCircle className="w-5 h-5" />
-                        <span>DECODED!</span>
-                      </span>
-                    ) : (
-                      'EXECUTE'
-                    )}
-                  </motion.button>
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(0, 255, 255, 0.5)' }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={onHint}
-                    className="px-6 py-3 bg-neon-blue text-black rounded-lg hover:bg-neon-blue/80 transition-all"
-                  >
-                    <Lightbulb className="w-5 h-5" />
-                  </motion.button>
+                <div className="text-lime-400 text-sm mt-1">
+                  Power: {Math.round(hexTechPower)}%
                 </div>
               </div>
+              
+              {/* Rune Circle */}
+              <motion.div
+                className="relative w-48 h-48 mx-auto mb-6"
+                animate={{ rotate: hexTechPower > 50 ? 360 : 0 }}
+                transition={{ duration: 4, repeat: hexTechPower > 50 ? Infinity : 0, ease: "linear" }}
+              >
+                <div className="absolute inset-0 border-2 border-lime-400 rounded-full" 
+                     style={{ boxShadow: `0 0 20px #84cc16` }}>
+                  {runes.map((rune, index) => {
+                    const angle = (index * 60) * (Math.PI / 180);
+                    const x = Math.cos(angle) * 80;
+                    const y = Math.sin(angle) * 80;
+                    
+                    return (
+                      <motion.button
+                        key={index}
+                        className={`absolute w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all duration-300 ${
+                          activeRunes.includes(index)
+                            ? 'bg-lime-400 text-black shadow-lg'
+                            : 'bg-black border-2 border-lime-400 text-lime-400 hover:bg-lime-400/20'
+                        }`}
+                        style={{
+                          left: `calc(50% + ${x}px - 20px)`,
+                          top: `calc(50% + ${y}px - 20px)`,
+                          boxShadow: activeRunes.includes(index) ? '0 0 15px #84cc16' : 'none'
+                        }}
+                        onClick={() => toggleRune(index)}
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        {rune}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+                
+                <div className="absolute inset-6 border border-yellow-400 rounded-full flex items-center justify-center">
+                  <motion.div
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Target className="w-12 h-12 text-yellow-400" />
+                  </motion.div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Decoding Terminal */}
+            <div className="bg-black p-4 rounded-lg border border-lime-400 mb-4">
+              <div className="text-lime-400 text-sm mb-2 font-mono">
+                > INTERCEPTED_ZAUN_TRANSMISSION.hex
+              </div>
+              <div className="text-yellow-400 text-lg tracking-wider font-mono animate-pulse">
+                {challenge.encoded}
+              </div>
+            </div>
+            
+            <div className="bg-black p-4 rounded-lg border border-yellow-400 mb-4">
+              <div className="text-yellow-400 text-sm mb-2 font-mono">
+                > ATBASH_DECODER.exe [ACTIVE]
+              </div>
+              <div className="text-lime-400 text-xs font-mono">
+                CIPHER_MAP: A↔Z, B↔Y, C↔X, D↔W, E↔V...
+              </div>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-lime-400 mb-2">
+                DECODED_OUTPUT:
+              </label>
+              <input
+                type="text"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                className="w-full px-4 py-2 bg-black border-2 border-lime-400 rounded-lg focus:border-yellow-400 focus:outline-none text-lime-400 font-mono"
+                placeholder="Enter decoded message..."
+                onKeyPress={(e) => e.key === 'Enter' && checkSolution()}
+                style={{ boxShadow: '0 0 10px rgba(132, 204, 22, 0.3)' }}
+              />
+            </div>
+            
+            <div className="flex space-x-4">
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: '0 0 25px #84cc16' }}
+                whileTap={{ scale: 0.95 }}
+                onClick={checkSolution}
+                className="flex-1 px-6 py-3 bg-lime-400 text-black rounded-lg hover:bg-lime-300 transition-all font-bold"
+              >
+                {showSolution ? (
+                  <span className="flex items-center justify-center space-x-2">
+                    <CheckCircle className="w-5 h-5" />
+                    <span>HEXTECH ACTIVATED!</span>
+                  </span>
+                ) : (
+                  'EXECUTE DECODE'
+                )}
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: '0 0 25px #eab308' }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onHint}
+                className="px-6 py-3 bg-yellow-400 text-black rounded-lg hover:bg-yellow-300 transition-all"
+              >
+                <Lightbulb className="w-5 h-5" />
+              </motion.button>
             </div>
           </div>
 
@@ -205,16 +232,17 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+              className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
             >
-              <div className="bg-gray-900 border border-neon-green p-8 rounded-lg shadow-2xl text-center">
+              <div className="bg-black border-2 border-lime-400 p-8 rounded-lg shadow-2xl text-center"
+                   style={{ boxShadow: '0 0 50px #84cc16' }}>
                 <motion.div
-                  animate={{ rotate: 360 }}
+                  animate={{ rotate: 360, scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <Zap className="w-16 h-16 text-neon-green mx-auto mb-4" />
+                  <Zap className="w-16 h-16 text-lime-400 mx-auto mb-4" />
                 </motion.div>
-                <h3 className="text-2xl font-bold text-neon-green mb-2">HEXTECH ACTIVATED!</h3>
+                <h3 className="text-2xl font-bold text-lime-400 mb-2">HEXTECH CRYSTAL ACTIVATED!</h3>
                 <p className="text-gray-300">Advancing to next sector...</p>
               </div>
             </motion.div>
