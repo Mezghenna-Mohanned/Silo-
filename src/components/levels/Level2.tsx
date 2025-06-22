@@ -169,7 +169,7 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
             {/* Decoding Terminal */}
             <div className="bg-black p-4 rounded-lg border border-lime-400 mb-4">
               <div className="text-lime-400 text-sm mb-2 font-mono">
-                > INTERCEPTED_ZAUN_TRANSMISSION.hex
+                {'> INTERCEPTED_ZAUN_TRANSMISSION.hex'}
               </div>
               <div className="text-yellow-400 text-lg tracking-wider font-mono animate-pulse">
                 {challenge.encoded}
@@ -178,7 +178,7 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
             
             <div className="bg-black p-4 rounded-lg border border-yellow-400 mb-4">
               <div className="text-yellow-400 text-sm mb-2 font-mono">
-                > ATBASH_DECODER.exe [ACTIVE]
+                {'> ATBASH_DECODER.exe [ACTIVE]'}
               </div>
               <div className="text-lime-400 text-xs font-mono">
                 CIPHER_MAP: A↔Z, B↔Y, C↔X, D↔W, E↔V...
