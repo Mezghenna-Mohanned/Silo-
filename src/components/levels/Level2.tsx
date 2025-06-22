@@ -41,20 +41,21 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
   };
 
   return (
-    <div 
-      className="min-h-screen pt-20 relative overflow-hidden"
-      style={{
-        backgroundImage: 'url(/images/jnx.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
-      {/* Dark overlay to make content readable */}
-      <div className="absolute inset-0 bg-black/60"></div>
+    <div className="min-h-screen pt-20 relative overflow-hidden bg-black">
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/70 z-0"></div>
+      
+      {/* Original image with real dimensions */}
+      <div className="absolute inset-0 flex items-center justify-center z-0">
+        <img 
+          src="/images/jnx.png" 
+          alt="Arcane background" 
+          className="object-contain max-w-full max-h-full"
+        />
+      </div>
       
       {/* Animated particles */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-10">
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
@@ -73,7 +74,7 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
         ))}
       </div>
 
-      <div className="container mx-auto px-4 py-8 relative z-10">
+      <div className="container mx-auto px-4 py-8 relative z-20">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
