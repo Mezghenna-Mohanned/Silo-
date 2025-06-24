@@ -41,21 +41,22 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
   };
 
   return (
-    <div className="min-h-screen pt-20 relative overflow-hidden bg-black">
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/70 z-0"></div>
-      
-      {/* Original image with real dimensions */}
-      <div className="absolute inset-0 flex items-center justify-center z-0">
+    <div className="min-h-screen relative overflow-hidden bg-black">
+      {/* Enlarged background image */}
+      <div className="absolute inset-0 flex items-center justify-start z-0">
         <img 
           src="/images/jnx.png" 
           alt="Arcane background" 
-          className="object-contain max-w-full max-h-full"
+          className="h-full object-contain object-left"
+          style={{ width: 'auto', maxWidth: '120%' }}
         />
       </div>
       
+      {/* Dark overlay - only outside the image */}
+      <div className="absolute inset-0 bg-black/70 z-10"></div>
+      
       {/* Animated particles */}
-      <div className="absolute inset-0 z-10">
+      <div className="absolute inset-0 z-20">
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
@@ -74,13 +75,14 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
         ))}
       </div>
 
-      <div className="container mx-auto px-4 py-8 relative z-20">
+      {/* Game container - left-aligned and scaled down */}
+      <div className="container mx-auto px-4 py-8 relative z-30 w-full max-w-[50%]">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
-          className="max-w-2xl"
+          className="scale-90 origin-left" // Scales down the UI while keeping it left-aligned
         >
-          {/* Header - positioned on the left */}
+          {/* Header */}
           <div className="bg-black/80 backdrop-blur-sm p-6 rounded-lg border-2 border-lime-400 shadow-2xl mb-6">
             <motion.h1
               className="text-3xl font-bold text-lime-400 mb-3 text-center"
@@ -100,13 +102,12 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
             </div>
           </div>
 
-          {/* Main Interface - left side only */}
+          {/* Main Interface - scaled down */}
           <div className="bg-black/85 backdrop-blur-sm p-6 border-2 border-lime-400 shadow-2xl rounded-lg">
             {/* HexTech Power Core */}
             <div className="text-center mb-6">
               <h3 className="text-xl font-bold text-lime-400 mb-4">HexTech Power Core</h3>
               
-              {/* Power Level Display */}
               <div className="mb-4">
                 <div className="w-full bg-gray-800 rounded-full h-4 border border-lime-400">
                   <motion.div
@@ -120,9 +121,8 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
                 </div>
               </div>
               
-              {/* Rune Circle */}
               <motion.div
-                className="relative w-48 h-48 mx-auto mb-6"
+                className="relative w-40 h-40 mx-auto mb-6" // Smaller rune circle
                 animate={{ rotate: hexTechPower > 50 ? 360 : 0 }}
                 transition={{ duration: 4, repeat: hexTechPower > 50 ? Infinity : 0, ease: "linear" }}
               >
@@ -130,20 +130,20 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
                      style={{ boxShadow: `0 0 20px #84cc16` }}>
                   {runes.map((rune, index) => {
                     const angle = (index * 60) * (Math.PI / 180);
-                    const x = Math.cos(angle) * 80;
-                    const y = Math.sin(angle) * 80;
+                    const x = Math.cos(angle) * 70;
+                    const y = Math.sin(angle) * 70;
                     
                     return (
                       <motion.button
                         key={index}
-                        className={`absolute w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all duration-300 ${
+                        className={`absolute w-8 h-8 rounded-full flex items-center justify-center text-lg ${
                           activeRunes.includes(index)
                             ? 'bg-lime-400 text-black shadow-lg'
                             : 'bg-black border-2 border-lime-400 text-lime-400 hover:bg-lime-400/20'
                         }`}
                         style={{
-                          left: `calc(50% + ${x}px - 20px)`,
-                          top: `calc(50% + ${y}px - 20px)`,
+                          left: `calc(50% + ${x}px - 16px)`,
+                          top: `calc(50% + ${y}px - 16px)`,
                           boxShadow: activeRunes.includes(index) ? '0 0 15px #84cc16' : 'none'
                         }}
                         onClick={() => toggleRune(index)}
@@ -156,29 +156,24 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
                   })}
                 </div>
                 
-                <div className="absolute inset-6 border border-yellow-400 rounded-full flex items-center justify-center">
-                  <motion.div
-                    animate={{ rotate: -360 }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                  >
-                    <Target className="w-12 h-12 text-yellow-400" />
-                  </motion.div>
+                <div className="absolute inset-5 border border-yellow-400 rounded-full flex items-center justify-center">
+                  <Target className="w-10 h-10 text-yellow-400" />
                 </div>
               </motion.div>
             </div>
 
             {/* Decoding Terminal */}
-            <div className="bg-black p-4 rounded-lg border border-lime-400 mb-4">
-              <div className="text-lime-400 text-sm mb-2 font-mono">
+            <div className="bg-black p-3 rounded-lg border border-lime-400 mb-4">
+              <div className="text-lime-400 text-sm mb-1 font-mono">
                 {'> INTERCEPTED_ZAUN_TRANSMISSION.hex'}
               </div>
-              <div className="text-yellow-400 text-lg tracking-wider font-mono animate-pulse">
+              <div className="text-yellow-400 text-md tracking-wider font-mono animate-pulse">
                 {challenge.encoded}
               </div>
             </div>
             
-            <div className="bg-black p-4 rounded-lg border border-yellow-400 mb-4">
-              <div className="text-yellow-400 text-sm mb-2 font-mono">
+            <div className="bg-black p-3 rounded-lg border border-yellow-400 mb-4">
+              <div className="text-yellow-400 text-sm mb-1 font-mono">
                 {'> ATBASH_DECODER.exe [ACTIVE]'}
               </div>
               <div className="text-lime-400 text-xs font-mono">
@@ -194,37 +189,29 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
                 type="text"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                className="w-full px-4 py-2 bg-black border-2 border-lime-400 rounded-lg focus:border-yellow-400 focus:outline-none text-lime-400 font-mono"
+                className="w-full px-3 py-1 bg-black border-2 border-lime-400 rounded-lg text-lime-400 font-mono"
                 placeholder="Enter decoded message..."
                 onKeyPress={(e) => e.key === 'Enter' && checkSolution()}
-                style={{ boxShadow: '0 0 10px rgba(132, 204, 22, 0.3)' }}
               />
             </div>
             
-            <div className="flex space-x-4">
+            <div className="flex space-x-3">
               <motion.button
-                whileHover={{ scale: 1.05, boxShadow: '0 0 25px #84cc16' }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={checkSolution}
-                className="flex-1 px-6 py-3 bg-lime-400 text-black rounded-lg hover:bg-lime-300 transition-all font-bold"
+                className="flex-1 px-4 py-2 bg-lime-400 text-black rounded-lg font-bold text-sm"
               >
-                {showSolution ? (
-                  <span className="flex items-center justify-center space-x-2">
-                    <CheckCircle className="w-5 h-5" />
-                    <span>HEXTECH ACTIVATED!</span>
-                  </span>
-                ) : (
-                  'EXECUTE DECODE'
-                )}
+                {showSolution ? 'HEXTECH ACTIVATED!' : 'EXECUTE DECODE'}
               </motion.button>
               
               <motion.button
-                whileHover={{ scale: 1.05, boxShadow: '0 0 25px #eab308' }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onHint}
-                className="px-6 py-3 bg-yellow-400 text-black rounded-lg hover:bg-yellow-300 transition-all"
+                className="px-4 py-2 bg-yellow-400 text-black rounded-lg"
               >
-                <Lightbulb className="w-5 h-5" />
+                <Lightbulb className="w-4 h-4" />
               </motion.button>
             </div>
           </div>
@@ -235,15 +222,9 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
               animate={{ opacity: 1, scale: 1 }}
               className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
             >
-              <div className="bg-black border-2 border-lime-400 p-8 rounded-lg shadow-2xl text-center"
-                   style={{ boxShadow: '0 0 50px #84cc16' }}>
-                <motion.div
-                  animate={{ rotate: 360, scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Zap className="w-16 h-16 text-lime-400 mx-auto mb-4" />
-                </motion.div>
-                <h3 className="text-2xl font-bold text-lime-400 mb-2">HEXTECH CRYSTAL ACTIVATED!</h3>
+              <div className="bg-black border-2 border-lime-400 p-6 rounded-lg text-center">
+                <Zap className="w-12 h-12 text-lime-400 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-lime-400 mb-2">HEXTECH CRYSTAL ACTIVATED!</h3>
                 <p className="text-gray-300">Advancing to next sector...</p>
               </div>
             </motion.div>
