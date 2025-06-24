@@ -11,7 +11,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #000;
+  background-color: #111827;
   overflow-x: hidden;
 }
 
@@ -26,16 +26,16 @@ code {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: #1f2937;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4a5568;
+  background: #4b5563;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #718096;
+  background: #6b7280;
 }
 
 /* Glowing text effect */
@@ -45,33 +45,33 @@ code {
 
 /* Matrix rain effect */
 .matrix-char {
-  color: #00ff00;
+  color: #22c55e;
   font-family: 'Courier New', monospace;
   font-weight: bold;
-  text-shadow: 0 0 5px #00ff00;
+  text-shadow: 0 0 5px #22c55e;
 }
 
 /* Cyberpunk grid */
 .cyber-grid {
   background-image: 
-    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+    linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
 /* Neon border animation */
 .neon-border {
   border: 2px solid;
-  border-image: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff) 1;
+  border-image: linear-gradient(45deg, #06b6d4, #ec4899, #eab308, #06b6d4) 1;
   animation: neon-border-rotate 3s linear infinite;
 }
 
 @keyframes neon-border-rotate {
-  0% { border-image-source: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff); }
-  25% { border-image-source: linear-gradient(135deg, #ff00ff, #ffff00, #00ffff, #ff00ff); }
-  50% { border-image-source: linear-gradient(225deg, #ffff00, #00ffff, #ff00ff, #ffff00); }
-  75% { border-image-source: linear-gradient(315deg, #00ffff, #ff00ff, #ffff00, #00ffff); }
-  100% { border-image-source: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff); }
+  0% { border-image-source: linear-gradient(45deg, #06b6d4, #ec4899, #eab308, #06b6d4); }
+  25% { border-image-source: linear-gradient(135deg, #ec4899, #eab308, #06b6d4, #ec4899); }
+  50% { border-image-source: linear-gradient(225deg, #eab308, #06b6d4, #ec4899, #eab308); }
+  75% { border-image-source: linear-gradient(315deg, #06b6d4, #ec4899, #eab308, #06b6d4); }
+  100% { border-image-source: linear-gradient(45deg, #06b6d4, #ec4899, #eab308, #06b6d4); }
 }
 
 /* Terminal cursor */
@@ -138,8 +138,8 @@ code {
 /* Alien symbols */
 .alien-symbol {
   font-size: 2rem;
-  color: #00ff88;
-  text-shadow: 0 0 10px #00ff88;
+  color: #10b981;
+  text-shadow: 0 0 10px #10b981;
   animation: alien-pulse 2s ease-in-out infinite alternate;
 }
 
@@ -182,11 +182,54 @@ code {
 
 /* Firewall security bars */
 .security-bar {
-  background: linear-gradient(90deg, #ff0000, #ff4444, #ff0000);
+  background: linear-gradient(90deg, #ef4444, #f87171, #ef4444);
   animation: security-scan 2s ease-in-out infinite;
 }
 
 @keyframes security-scan {
   0%, 100% { opacity: 0.8; transform: scaleX(1); }
   50% { opacity: 1; transform: scaleX(1.05); }
+}
+
+/* Glitch effect */
+.glitch {
+  animation: glitch 0.3s ease-in-out infinite;
+}
+
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+/* Hacker terminal effects */
+.terminal-glow {
+  box-shadow: 
+    0 0 10px rgba(34, 197, 94, 0.3),
+    inset 0 0 10px rgba(34, 197, 94, 0.1);
+}
+
+.cyber-border {
+  position: relative;
+}
+
+.cyber-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #06b6d4, #8b5cf6, #ec4899, #06b6d4);
+  border-radius: inherit;
+  z-index: -1;
+  animation: cyber-border-rotate 3s linear infinite;
+}
+
+@keyframes cyber-border-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

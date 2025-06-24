@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Zap, Lightbulb, CheckCircle, Cog, Target } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Zap, Lightbulb, CheckCircle, Play, ArrowRight, Cpu, Binary } from 'lucide-react';
 import { atbashEncode } from '../../utils/ciphers';
-import { generateChallenge } from '../../utils/gameData';
 import { levels } from '../../utils/gameData';
 
 interface Level2Props {
@@ -12,57 +11,69 @@ interface Level2Props {
 }
 
 export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed }) => {
-  const [userInput, setUserInput] = useState('');
+  const [phase, setPhase] = useState<1 | 2>(1);
+  const [phase1Input, setPhase1Input] = useState('');
+  const [phase2Input, setPhase2Input] = useState('');
   const [showSolution, setShowSolution] = useState(false);
-  const [activeRunes, setActiveRunes] = useState<number[]>([]);
-  const [hexTechPower, setHexTechPower] = useState(0);
+  const [glitchEffect, setGlitchEffect] = useState(false);
   
   const level = levels[1];
-  const challenge = generateChallenge(level);
 
-  const runes = ['⚡', '🔮', '⚙️', '🧪', '💎', '🔥'];
+  // Phase 1: Decode to "S2E1"
+  const phase1Cipher = "F2R1"; // Simple cipher that decodes to S2E1
+  const phase1Solution = "S2E1";
+  
+  // Phase 2: Decode to "10:15"
+  const phase2Cipher = "01001000 00110001 00110000 00111010 00110001 00110101"; // Binary for "10:15"
+  const phase2Solution = "10:15";
 
-  const toggleRune = (index: number) => {
-    setActiveRunes(prev => {
-      const newActive = prev.includes(index) 
-        ? prev.filter(i => i !== index)
-        : [...prev, index];
-      setHexTechPower(newActive.length * 16.67);
-      return newActive;
-    });
-  };
-
-  const checkSolution = () => {
-    if (userInput.toUpperCase().trim() === challenge.solution) {
-      setShowSolution(true);
-      const score = Math.max(75, level.maxScore - (hintsUsed * 25));
-      setTimeout(() => onComplete(score), 1500);
+  const checkPhase1 = () => {
+    const normalizedInput = phase1Input.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    if (normalizedInput === phase1Solution) {
+      setGlitchEffect(true);
+      setTimeout(() => {
+        setPhase(2);
+        setGlitchEffect(false);
+      }, 1500);
     }
   };
 
+  const checkPhase2 = () => {
+    const normalizedInput = phase2Input.replace(/[^0-9:]/g, '');
+    if (normalizedInput === phase2Solution) {
+      setShowSolution(true);
+      const score = Math.max(75, level.maxScore - (hintsUsed * 25));
+      setTimeout(() => onComplete(score), 2000);
+    }
+  };
+
+  const triggerGlitch = () => {
+    setGlitchEffect(true);
+    setTimeout(() => setGlitchEffect(false), 200);
+  };
+
   return (
-    <div className="min-h-screen relative overflow-hidden bg-black">
-      {/* Enlarged background image */}
-      <div className="absolute inset-0 flex items-center justify-start z-0">
+    <div className="min-h-screen pt-20 relative overflow-hidden bg-black">
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/70 z-0"></div>
+      
+      {/* Original image with real dimensions */}
+      <div className="absolute inset-0 flex items-center justify-center z-0">
         <img 
           src="/images/jnx.png" 
           alt="Arcane background" 
-          className="h-full object-contain object-left"
-          style={{ width: 'auto', maxWidth: '120%' }}
+          className="object-contain max-w-full max-h-full"
         />
       </div>
       
-      {/* Dark overlay - only outside the image */}
-      <div className="absolute inset-0 bg-black/70 z-10"></div>
-      
       {/* Animated particles */}
-      <div className="absolute inset-0 z-20">
+      <div className="absolute inset-0 z-10">
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 bg-lime-400 rounded-full"
+            className="absolute w-1 h-1 bg-cyan-400 rounded-full"
             animate={{
-              x: [0, Math.random() * window.innerWidth * 0.6],
+              x: [0, Math.random() * window.innerWidth],
               y: [0, Math.random() * window.innerHeight],
               opacity: [0, 1, 0],
             }}
@@ -75,14 +86,13 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
         ))}
       </div>
 
-      {/* Game container - left-aligned and scaled down */}
-      <div className="container mx-auto px-4 py-8 relative z-30 w-full max-w-[50%]">
+      <div className="container mx-auto px-4 py-8 relative z-20">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
-          className="scale-90 origin-left" // Scales down the UI while keeping it left-aligned
+          className="max-w-2xl"
         >
-          {/* Header */}
+          {/* Header - positioned on the left */}
           <div className="bg-black/80 backdrop-blur-sm p-6 rounded-lg border-2 border-lime-400 shadow-2xl mb-6">
             <motion.h1
               className="text-3xl font-bold text-lime-400 mb-3 text-center"
@@ -102,12 +112,13 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
             </div>
           </div>
 
-          {/* Main Interface - scaled down */}
+          {/* Main Interface - left side only */}
           <div className="bg-black/85 backdrop-blur-sm p-6 border-2 border-lime-400 shadow-2xl rounded-lg">
             {/* HexTech Power Core */}
             <div className="text-center mb-6">
               <h3 className="text-xl font-bold text-lime-400 mb-4">HexTech Power Core</h3>
               
+              {/* Power Level Display */}
               <div className="mb-4">
                 <div className="w-full bg-gray-800 rounded-full h-4 border border-lime-400">
                   <motion.div
@@ -121,8 +132,9 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
                 </div>
               </div>
               
+              {/* Rune Circle */}
               <motion.div
-                className="relative w-40 h-40 mx-auto mb-6" // Smaller rune circle
+                className="relative w-48 h-48 mx-auto mb-6"
                 animate={{ rotate: hexTechPower > 50 ? 360 : 0 }}
                 transition={{ duration: 4, repeat: hexTechPower > 50 ? Infinity : 0, ease: "linear" }}
               >
@@ -130,20 +142,20 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
                      style={{ boxShadow: `0 0 20px #84cc16` }}>
                   {runes.map((rune, index) => {
                     const angle = (index * 60) * (Math.PI / 180);
-                    const x = Math.cos(angle) * 70;
-                    const y = Math.sin(angle) * 70;
+                    const x = Math.cos(angle) * 80;
+                    const y = Math.sin(angle) * 80;
                     
                     return (
                       <motion.button
                         key={index}
-                        className={`absolute w-8 h-8 rounded-full flex items-center justify-center text-lg ${
+                        className={`absolute w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all duration-300 ${
                           activeRunes.includes(index)
                             ? 'bg-lime-400 text-black shadow-lg'
                             : 'bg-black border-2 border-lime-400 text-lime-400 hover:bg-lime-400/20'
                         }`}
                         style={{
-                          left: `calc(50% + ${x}px - 16px)`,
-                          top: `calc(50% + ${y}px - 16px)`,
+                          left: `calc(50% + ${x}px - 20px)`,
+                          top: `calc(50% + ${y}px - 20px)`,
                           boxShadow: activeRunes.includes(index) ? '0 0 15px #84cc16' : 'none'
                         }}
                         onClick={() => toggleRune(index)}
@@ -156,24 +168,29 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
                   })}
                 </div>
                 
-                <div className="absolute inset-5 border border-yellow-400 rounded-full flex items-center justify-center">
-                  <Target className="w-10 h-10 text-yellow-400" />
+                <div className="absolute inset-6 border border-yellow-400 rounded-full flex items-center justify-center">
+                  <motion.div
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Target className="w-12 h-12 text-yellow-400" />
+                  </motion.div>
                 </div>
               </motion.div>
             </div>
 
             {/* Decoding Terminal */}
-            <div className="bg-black p-3 rounded-lg border border-lime-400 mb-4">
-              <div className="text-lime-400 text-sm mb-1 font-mono">
+            <div className="bg-black p-4 rounded-lg border border-lime-400 mb-4">
+              <div className="text-lime-400 text-sm mb-2 font-mono">
                 {'> INTERCEPTED_ZAUN_TRANSMISSION.hex'}
               </div>
-              <div className="text-yellow-400 text-md tracking-wider font-mono animate-pulse">
+              <div className="text-yellow-400 text-lg tracking-wider font-mono animate-pulse">
                 {challenge.encoded}
               </div>
             </div>
             
-            <div className="bg-black p-3 rounded-lg border border-yellow-400 mb-4">
-              <div className="text-yellow-400 text-sm mb-1 font-mono">
+            <div className="bg-black p-4 rounded-lg border border-yellow-400 mb-4">
+              <div className="text-yellow-400 text-sm mb-2 font-mono">
                 {'> ATBASH_DECODER.exe [ACTIVE]'}
               </div>
               <div className="text-lime-400 text-xs font-mono">
@@ -189,29 +206,37 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
                 type="text"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                className="w-full px-3 py-1 bg-black border-2 border-lime-400 rounded-lg text-lime-400 font-mono"
+                className="w-full px-4 py-2 bg-black border-2 border-lime-400 rounded-lg focus:border-yellow-400 focus:outline-none text-lime-400 font-mono"
                 placeholder="Enter decoded message..."
                 onKeyPress={(e) => e.key === 'Enter' && checkSolution()}
+                style={{ boxShadow: '0 0 10px rgba(132, 204, 22, 0.3)' }}
               />
             </div>
             
-            <div className="flex space-x-3">
+            <div className="flex space-x-4">
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, boxShadow: '0 0 25px #84cc16' }}
                 whileTap={{ scale: 0.95 }}
                 onClick={checkSolution}
-                className="flex-1 px-4 py-2 bg-lime-400 text-black rounded-lg font-bold text-sm"
+                className="flex-1 px-6 py-3 bg-lime-400 text-black rounded-lg hover:bg-lime-300 transition-all font-bold"
               >
-                {showSolution ? 'HEXTECH ACTIVATED!' : 'EXECUTE DECODE'}
+                {showSolution ? (
+                  <span className="flex items-center justify-center space-x-2">
+                    <CheckCircle className="w-5 h-5" />
+                    <span>HEXTECH ACTIVATED!</span>
+                  </span>
+                ) : (
+                  'EXECUTE DECODE'
+                )}
               </motion.button>
               
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, boxShadow: '0 0 25px #eab308' }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onHint}
-                className="px-4 py-2 bg-yellow-400 text-black rounded-lg"
+                className="px-6 py-3 bg-yellow-400 text-black rounded-lg hover:bg-yellow-300 transition-all"
               >
-                <Lightbulb className="w-4 h-4" />
+                <Lightbulb className="w-5 h-5" />
               </motion.button>
             </div>
           </div>
@@ -222,14 +247,20 @@ export const Level2: React.FC<Level2Props> = ({ onComplete, onHint, hintsUsed })
               animate={{ opacity: 1, scale: 1 }}
               className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
             >
-              <div className="bg-black border-2 border-lime-400 p-6 rounded-lg text-center">
-                <Zap className="w-12 h-12 text-lime-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-lime-400 mb-2">HEXTECH CRYSTAL ACTIVATED!</h3>
+              <div className="bg-black border-2 border-lime-400 p-8 rounded-lg shadow-2xl text-center"
+                   style={{ boxShadow: '0 0 50px #84cc16' }}>
+                <motion.div
+                  animate={{ rotate: 360, scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Zap className="w-16 h-16 text-lime-400 mx-auto mb-4" />
+                </motion.div>
+                <h3 className="text-2xl font-bold text-lime-400 mb-2">HEXTECH CRYSTAL ACTIVATED!</h3>
                 <p className="text-gray-300">Advancing to next sector...</p>
               </div>
             </motion.div>
           )}
-        </motion.div>
+        </div>
       </div>
     </div>
   );
