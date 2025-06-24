@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Lock, CheckCircle, Play, Shield, Zap, Terminal, Eye, Cpu, Scroll, Alien, Clock, Flame } from 'lucide-react';
+import { Lock, CheckCircle, Play, Shield, Zap, Terminal, Eye, Cpu, Scroll, AlignCenter as Alien, Clock, Flame } from 'lucide-react';
 import { levels } from '../utils/gameData';
 import { GameState } from '../types/game';
 
