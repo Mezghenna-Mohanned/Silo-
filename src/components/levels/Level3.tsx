@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Terminal, Lightbulb, CheckCircle, Lock, Unlock, Shield, Database, Cpu } from 'lucide-react';
+import { Terminal, Lightbulb, CheckCircle, Lock, Unlock } from 'lucide-react';
+import { generateChallenge } from '../../utils/gameData';
 import { levels } from '../../utils/gameData';
 
 interface Level3Props {
@@ -21,11 +22,10 @@ interface AccessNode {
 export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed }) => {
   const [currentCommand, setCurrentCommand] = useState('');
   const [terminalOutput, setTerminalOutput] = useState<string[]>([
-    'SILO SECURITY SYSTEM v3.7.1',
-    'Initializing access nodes...',
-    '5 NODES DETECTED - ALL LOCKED',
-    'Authentication required for each node',
-    'Type "help" for available commands',
+    '> SILO SECURITY SYSTEM v3.7.1',
+    '> Initializing access nodes...',
+    '> 5 NODES DETECTED - ALL LOCKED',
+    '> Authentication required for each node',
     ''
   ]);
   const [currentNode, setCurrentNode] = useState<number | null>(null);
@@ -78,10 +78,6 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
 
   const level = levels[2];
   const fullSolution = "If you've gotten this far, you already know. The game is rigged. We think we're the chosen ones but we're only one of many. The founders didn't build a single silo. They built fifty. And they created the safeguard. We have been lied to.";
-
-  const normalizeText = (text: string): string => {
-    return text.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
-  };
 
   const executeCommand = (command: string) => {
     const cmd = command.toLowerCase().trim();
@@ -145,11 +141,12 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
       setCurrentNode(null);
       newOutput.push('Exited node access mode.');
     } else if (cmd === 'clear') {
-      setTerminalOutput(['Terminal cleared']);
+      setTerminalOutput(['> Terminal cleared']);
       return;
     } else if (currentNode !== null) {
+      // Check if the command matches the current node's phrase
       const node = accessNodes[currentNode - 1];
-      if (normalizeText(command) === normalizeText(node.phrase)) {
+      if (command.toLowerCase() === node.phrase.toLowerCase()) {
         const updatedNodes = [...accessNodes];
         updatedNodes[currentNode - 1].unlocked = true;
         setAccessNodes(updatedNodes);
@@ -173,11 +170,11 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
       newOutput.push('Command not recognized. Type "help" for available commands.');
     }
 
-    setTerminalOutput(newOutput.slice(-25));
+    setTerminalOutput(newOutput.slice(-20)); // Keep last 20 lines
   };
 
   const checkFinalSolution = () => {
-    if (normalizeText(finalInput) === normalizeText(fullSolution)) {
+    if (finalInput.trim() === fullSolution) {
       setShowSolution(true);
       const score = Math.max(100, level.maxScore - (hintsUsed * 30));
       setTimeout(() => onComplete(score), 1500);
@@ -187,46 +184,73 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 pt-12 relative overflow-hidden">
-      <div className="container mx-auto px-6 py-6 relative z-10">
+    <div className="min-h-screen bg-black pt-20 relative overflow-hidden">
+      {/* Matrix Rain Effect */}
+      <div className="absolute inset-0 opacity-10">
+        {[...Array(30)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-green-400 font-mono text-xs"
+            style={{ left: `${(i * 3.33) % 100}%` }}
+            animate={{
+              y: [-50, window.innerHeight + 50],
+            }}
+            transition={{
+              duration: Math.random() * 4 + 3,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+            }}
+          >
+            {Math.random().toString(36).substring(2, 8)}
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-6xl mx-auto"
+          className="max-w-5xl mx-auto"
         >
-          {/* Header */}
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-white mb-2">CIPHERQUEST</h1>
-            <div className="inline-flex items-center space-x-3 bg-gray-800/80 backdrop-blur-sm px-6 py-2 rounded-lg border border-green-500/30">
-              <Shield className="w-5 h-5 text-green-400" />
-              <h2 className="text-xl font-bold text-white">
-                SILO SECURITY TERMINAL
-              </h2>
+          {/* Terminal Header */}
+          <div className="bg-gray-900 p-4 rounded-t-lg border-2 border-green-400">
+            <div className="flex items-center space-x-4">
+              <Terminal className="w-6 h-6 text-green-400" />
+              <motion.h1
+                className="text-xl font-mono text-green-400"
+                animate={{ opacity: [1, 0.7, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                SILO_SECURITY_TERMINAL_v3.7.1
+              </motion.h1>
+              <div className="flex space-x-2 ml-auto">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              </div>
             </div>
-            <p className="text-gray-300 mt-2 text-sm">
-              Uncover the truth hidden in the system logs
-            </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Terminal Output - Takes 2 columns */}
-            <div className="lg:col-span-2 bg-gray-800/80 backdrop-blur-sm border border-green-500/30 rounded-lg">
-              {/* Terminal Header */}
-              <div className="flex items-center justify-between p-3 border-b border-gray-700">
-                <div className="flex items-center space-x-2">
-                  <Terminal className="w-4 h-4 text-green-400" />
-                  <span className="font-mono text-green-400 text-xs">SILO_SECURITY_TERMINAL_v3.7.1</span>
-                </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Terminal Output */}
+            <div className="md:col-span-2 bg-black p-6 border-2 border-green-400 border-t-0 font-mono text-green-400">
+              <div className="mb-6">
+                <h2 className="text-lg mb-2 text-center animate-pulse">
+                  {level.title}
+                </h2>
+                <p className="text-sm text-gray-400 text-center mb-4">
+                  Uncover the truth hidden in the system logs
+                </p>
               </div>
 
               {/* Terminal Output Area */}
-              <div className="p-4 font-mono text-green-400 text-sm h-64 overflow-y-auto bg-black/20">
+              <div className="bg-gray-900 p-4 rounded-lg mb-4 h-80 overflow-y-auto border border-gray-700">
                 {terminalOutput.map((line, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="mb-1 break-all"
+                    className="mb-1 text-sm"
                   >
                     {line}
                   </motion.div>
@@ -239,88 +263,71 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
               </div>
 
               {/* Command Input */}
-              <div className="p-3 border-t border-gray-700 bg-gray-900/50">
-                {!showFinalInput ? (
-                  <div className="flex items-center space-x-2">
-                    <span className="text-green-400 font-mono text-sm"></span>
-                    <input
-                      type="text"
-                      value={currentCommand}
-                      onChange={(e) => setCurrentCommand(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          executeCommand(currentCommand);
-                          setCurrentCommand('');
-                        }
-                      }}
-                      className="flex-1 bg-transparent border-none outline-none text-green-400 font-mono text-sm"
-                      placeholder="Enter command..."
-                    />
+              {!showFinalInput ? (
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-400">$</span>
+                  <input
+                    type="text"
+                    value={currentCommand}
+                    onChange={(e) => setCurrentCommand(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        executeCommand(currentCommand);
+                        setCurrentCommand('');
+                      }
+                    }}
+                    className="flex-1 bg-transparent border-none outline-none text-green-400"
+                    placeholder="Enter command..."
+                  />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="text-center text-yellow-400 font-bold">
+                    === FINAL ACCESS TERMINAL ===
                   </div>
-                ) : (
-                  <div className="space-y-3">
-                    <div className="text-center text-yellow-400 font-bold font-mono text-sm">
-                      === FINAL ACCESS TERMINAL ===
-                    </div>
-                    <textarea
-                      value={finalInput}
-                      onChange={(e) => setFinalInput(e.target.value)}
-                      className="w-full h-20 bg-black/50 border border-green-400 rounded p-2 text-green-400 text-xs font-mono resize-none"
-                      placeholder="Enter the complete decryption string..."
-                    />
-                    <button
-                      onClick={checkFinalSolution}
-                      className="w-full px-3 py-2 bg-green-600 text-black rounded hover:bg-green-500 transition-colors font-bold text-sm"
-                    >
-                      EXECUTE FINAL DECODE
-                    </button>
-                  </div>
-                )}
-              </div>
+                  <textarea
+                    value={finalInput}
+                    onChange={(e) => setFinalInput(e.target.value)}
+                    className="w-full h-24 bg-gray-900 border border-green-400 rounded p-2 text-green-400 text-sm"
+                    placeholder="Enter the complete decryption string..."
+                  />
+                  <button
+                    onClick={checkFinalSolution}
+                    className="w-full px-4 py-2 bg-green-600 text-black rounded hover:bg-green-500 transition-colors font-bold"
+                  >
+                    EXECUTE FINAL DECODE
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Node Status Panel */}
-            <div className="bg-gray-800/80 backdrop-blur-sm border border-green-500/30 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                  <Database className="w-4 h-4 text-green-400" />
-                  <h3 className="text-green-400 font-mono text-sm">ACCESS NODES</h3>
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onHint}
-                  className="px-2 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors flex items-center space-x-1 text-xs"
-                >
-                  <Lightbulb className="w-3 h-3" />
-                  <span>HINT</span>
-                </motion.button>
-              </div>
-
-              <div className="space-y-2">
+            <div className="bg-gray-900 p-4 border-2 border-green-400 border-t-0">
+              <h3 className="text-green-400 font-mono text-lg mb-4 text-center">ACCESS NODES</h3>
+              <div className="space-y-3">
                 {accessNodes.map((node) => (
                   <motion.div
                     key={node.id}
-                    className={`p-2 rounded border transition-all ${
+                    className={`p-3 rounded border ${
                       node.unlocked 
                         ? 'border-green-400 bg-green-900/20' 
                         : 'border-gray-600 bg-gray-800/50'
                     }`}
-                    whileHover={{ scale: 1.01 }}
+                    whileHover={{ scale: 1.02 }}
                   >
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 mb-1">
                       {node.unlocked ? (
-                        <Unlock className="w-3 h-3 text-green-400" />
+                        <Unlock className="w-4 h-4 text-green-400" />
                       ) : (
-                        <Lock className="w-3 h-3 text-gray-500" />
+                        <Lock className="w-4 h-4 text-gray-500" />
                       )}
-                      <span className={`text-xs font-mono ${
+                      <span className={`text-sm font-mono ${
                         node.unlocked ? 'text-green-400' : 'text-gray-400'
                       }`}>
                         {node.name}
                       </span>
                     </div>
-                    <div className={`text-xxs mt-1 ${
+                    <div className={`text-xs ${
                       node.unlocked ? 'text-green-300' : 'text-gray-500'
                     }`}>
                       {node.unlocked ? 'UNLOCKED' : 'LOCKED'}
@@ -329,12 +336,9 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
                 ))}
               </div>
 
-              <div className="mt-4 p-3 bg-gray-900/50 rounded border border-gray-600">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Cpu className="w-3 h-3 text-green-400" />
-                  <div className="text-green-400 text-xs font-mono">PROGRESS</div>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-1.5 mb-1">
+              <div className="mt-6 p-3 bg-gray-800 rounded border border-gray-600">
+                <div className="text-green-400 text-sm font-mono mb-2">PROGRESS</div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
                   <motion.div
                     className="h-full bg-green-400 rounded-full"
                     style={{ 
@@ -343,19 +347,29 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
                     transition={{ duration: 0.5 }}
                   />
                 </div>
-                <div className="text-xxs text-gray-400 font-mono">
+                <div className="text-xs text-gray-400 mt-1">
                   {accessNodes.filter(n => n.unlocked).length}/5 nodes unlocked
                 </div>
               </div>
 
-              <div className="mt-3 text-xxs text-gray-500 font-mono space-y-0.5">
-                <div className="text-gray-400 mb-1">COMMANDS:</div>
+              <div className="mt-4 text-xs text-gray-500 font-mono">
+                <div>Commands:</div>
                 <div>• access [1-5]</div>
                 <div>• status</div>
                 <div>• help</div>
                 <div>• clear</div>
                 <div>• exit</div>
               </div>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onHint}
+                className="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                <Lightbulb className="w-4 h-4 inline mr-2" />
+                Hint
+              </motion.button>
             </div>
           </div>
 
@@ -365,19 +379,15 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
               animate={{ opacity: 1, scale: 1 }}
               className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
             >
-              <div className="bg-gray-900 border-2 border-green-400 p-6 rounded-lg shadow-2xl text-center max-w-sm"
-                   style={{ boxShadow: '0 0 30px rgba(34, 197, 94, 0.5)' }}>
+              <div className="bg-gray-900 border-2 border-green-400 p-8 rounded-lg shadow-2xl text-center">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
+                  <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
                 </motion.div>
-                <h3 className="text-xl font-bold text-green-400 mb-1">TRUTH REVEALED!</h3>
-                <p className="text-gray-300 mb-3 text-sm">The silo's secrets have been exposed</p>
-                <div className="text-green-400 text-xs font-mono">
-                  "The truth will set you free..."
-                </div>
+                <h3 className="text-2xl font-bold text-green-400 mb-2">TRUTH REVEALED!</h3>
+                <p className="text-gray-300">The silo's secrets have been exposed...</p>
               </div>
             </motion.div>
           )}
