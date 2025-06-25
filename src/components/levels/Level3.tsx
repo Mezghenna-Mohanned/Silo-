@@ -230,7 +230,7 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6 h-[calc(100vh-220px)]">
+          <div className="grid lg:grid-cols-3 gap-6 min-h-[500px] h-[70vh] max-h-[800px]">
             {/* Terminal Output - Takes 2 columns */}
             <div className="lg:col-span-2 bg-gray-800/80 backdrop-blur-sm border border-green-500/30 rounded-lg flex flex-col">
               {/* Terminal Header */}
@@ -247,14 +247,14 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
               </div>
 
               {/* Terminal Output Area */}
-              <div className="flex-1 p-4 font-mono text-green-400 text-sm">
-                <div className="bg-black/50 p-4 rounded-lg h-full overflow-y-auto border border-gray-700">
+              <div className="flex-1 p-4 font-mono text-green-400 text-sm overflow-hidden">
+                <div className="bg-black/50 p-4 rounded-lg h-full overflow-y-auto border border-gray-700" style={{ maxHeight: 'calc(100% - 2rem)' }}>
                   {terminalOutput.map((line, index) => (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="mb-1"
+                      className="mb-1 break-all"
                     >
                       {line}
                     </motion.div>
@@ -326,7 +326,7 @@ export const Level3: React.FC<Level3Props> = ({ onComplete, onHint, hintsUsed })
                 </motion.button>
               </div>
 
-              <div className="space-y-3 flex-1">
+              <div className="space-y-3 flex-1 overflow-y-auto" style={{ maxHeight: '300px' }}>
                 {accessNodes.map((node) => (
                   <motion.div
                     key={node.id}
